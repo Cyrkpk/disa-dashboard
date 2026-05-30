@@ -1,0 +1,10 @@
+<<<<<<< HEAD
+streamlit
+paho-mqtt
+pyserial
+=======
+streamlit
+paho-mqtt
+pyserial
+>>>>>>> c64fc4723f2fb7b8268bd26de2a9b4a947f1f340
+pandas

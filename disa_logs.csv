@@ -1,0 +1,2 @@
+timestamp,mode,soc,voltage,current,power,temp,humid,lux,grid,r1,r2,r3,anomaly_count,source
+16:20:45,ECO,56.7,12.26,2.04,20.8,33.0,69.6,3744.0,False,True,True,False,0,SOLAR
