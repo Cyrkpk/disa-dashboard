@@ -70,10 +70,7 @@ def process_data(raw):
         bat   = d.get("battery", {})
         env   = d.get("env", {})
         rels  = d.get("relays", {})
-<<<<<<< HEAD
         pred  = d.get("predictif", {})
-=======
->>>>>>> c64fc4723f2fb7b8268bd26de2a9b4a947f1f340
         anoms = d.get("anomalies", [])
         now   = datetime.datetime.now().strftime("%H:%M:%S")
 
@@ -92,15 +89,9 @@ def process_data(raw):
         st.session_state.history_voltage.append(voltage)
         st.session_state.history_current.append(current)
         st.session_state.history_power.append(power)
-<<<<<<< HEAD
         st.session_state.history_temp.append(temp if temp is not None else 0)
         st.session_state.history_humid.append(humid if humid is not None else 0)
         st.session_state.history_lux.append(lux if lux is not None else 0)
-=======
-        st.session_state.history_temp.append(temp or 0)
-        st.session_state.history_humid.append(humid or 0)
-        st.session_state.history_lux.append(lux or 0)
->>>>>>> c64fc4723f2fb7b8268bd26de2a9b4a947f1f340
         st.session_state.history_mode.append(mode)
         st.session_state.history_anomalies.append(a_count)
         st.session_state.total_measures += 1
@@ -113,7 +104,6 @@ def process_data(raw):
 
         if not os.path.exists(CSV_FILE):
             with open(CSV_FILE,"w",newline="",encoding="utf-8") as f:
-<<<<<<< HEAD
                 csv.writer(f).writerow(["timestamp","mode","soc","voltage","current","power","temp","humid","lux","r1","r2","anomaly_count"])
         with open(CSV_FILE,"a",newline="",encoding="utf-8") as f:
             csv.writer(f).writerow([now,mode,soc,voltage,current,power,temp,humid,lux,
@@ -127,22 +117,6 @@ def process_data(raw):
             "anomaly_count":a_count,"anomalies":anoms,
             "sd_ok":d.get("sd_ok",False),"wifi_ok":d.get("wifi_ok",False),
             "predictif":pred
-=======
-                csv.writer(f).writerow(["timestamp","mode","soc","voltage","current","power","temp","humid","lux","grid","r1","r2","r3","anomaly_count","source"])
-        with open(CSV_FILE,"a",newline="",encoding="utf-8") as f:
-            csv.writer(f).writerow([now,mode,soc,voltage,current,power,temp,humid,lux,
-                d.get("grid",False),rels.get("r1_critical",False),rels.get("r2_noncrit",False),
-                rels.get("r3_grid",False),a_count,d.get("source","SOLAR")])
-
-        st.session_state.last = {
-            "ts":now,"mode":mode,"source":d.get("source","SOLAR"),"soc":soc,
-            "voltage":voltage,"current":current,"power":power,
-            "temp":temp,"humid":humid,"lux":lux,"grid":d.get("grid",False),
-            "r1":rels.get("r1_critical",False),"r2":rels.get("r2_noncrit",False),
-            "r3":rels.get("r3_grid",False),"anomaly_count":a_count,"anomalies":anoms,
-            "sd_ok":d.get("sd_ok",False),"wifi_ok":d.get("wifi_ok",False),
-            "wdt_ok":d.get("wdt_ok",False),"ai":d.get("ai",{})
->>>>>>> c64fc4723f2fb7b8268bd26de2a9b4a947f1f340
         }
     except Exception as e:
         print(f"[PARSE] {e}")
@@ -216,7 +190,6 @@ def verify_token(token):
 # ═══════════════════════════════════════════
 def simulate():
     t = time.time(); soc = 50 + 30 * math.sin(t / 60)
-<<<<<<< HEAD
     mode = "NORMAL" if soc > 60 else ("CRITIQUE" if soc > 40 else "COUPE")
     process_data({"device":"DISA-SIM","version":"4.2","ts":int(t*1000),
         "mode_name":mode,
@@ -230,20 +203,6 @@ def simulate():
         "predictif":{"ready":True,"pred_v":round(11+soc/45-0.1,2),"pred_mode":mode,
                      "inferences":random.randint(10,100),"thr_normal":71.2,"thr_critique":39.8},
         "anomaly_count":0,"anomalies":[],"sd_ok":True,"wifi_ok":True})
-=======
-    mode = "NORMAL" if soc>70 else("ECO" if soc>50 else("CRITIQUE" if soc>40 else"COUPE"))
-    process_data({"device":"DISA-SIM","version":"4.1.0","ts":int(t*1000),
-        "mode_name":mode,"source":"SOLAR",
-        "battery":{"soc_pct":round(soc,1),"voltage_v":round(11+soc/45,2),
-                   "current_a":round(random.uniform(1.5,3.5),2),
-                   "power_w":round(random.uniform(18,42),1),"system_v":12},
-        "env":{"temp_c":round(32+random.uniform(-2,5),1),"humid_pct":round(65+random.uniform(-5,10),1),
-               "lux":round(random.uniform(2000,5000),0),"dht_ok":True,"bh1750_ok":True},
-        "grid":False,"relays":{"r1_critical":soc>40,"r2_noncrit":soc>50,"r3_grid":False},
-        "anomaly_count":0,"anomalies":[],"sd_ok":True,"wifi_ok":True,"wdt_ok":True,
-        "ai":{"ready":True,"pred_v":round(11+soc/45-0.1,2),"pred_mode":mode,
-              "inferences":random.randint(10,100)}})
->>>>>>> c64fc4723f2fb7b8268bd26de2a9b4a947f1f340
 
 # ═══════════════════════════════════════════
 # APPLICATION STREAMLIT
@@ -272,22 +231,14 @@ div[data-testid="metric-container"] {background:#131A2E;border:1px solid #2C3E6E
 div[data-testid="metric-container"] label {color:#95A5A6;font-size:11px;text-transform:uppercase;letter-spacing:1px}
 div[data-testid="metric-container"] div[data-testid="stMetricValue"] {color:#ECF0F1;font-size:24px;font-weight:700}
 .mode-NORMAL {background:linear-gradient(135deg,#0D3B1E,#1A5C2E);border:2px solid #27AE60;border-radius:14px;padding:20px;color:white}
-<<<<<<< HEAD
 .mode-CRITIQUE {background:linear-gradient(135deg,#3E2A00,#6B4800);border:2px solid #E67E22;border-radius:14px;padding:20px;color:white}
-=======
-.mode-ECO {background:linear-gradient(135deg,#3E2A00,#6B4800);border:2px solid #EF9F27;border-radius:14px;padding:20px;color:white}
-.mode-CRITIQUE {background:linear-gradient(135deg,#3E1500,#7A2900);border:2px solid #E67E22;border-radius:14px;padding:20px;color:white}
->>>>>>> c64fc4723f2fb7b8268bd26de2a9b4a947f1f340
 .mode-COUPE {background:linear-gradient(135deg,#3E0000,#7A0000);border:2px solid #C0392B;border-radius:14px;padding:20px;color:white}
 .relay-on {background:#0D3B1E;border:1px solid #27AE60;border-radius:8px;padding:8px 12px;color:#27AE60;font-weight:700;text-align:center}
 .relay-off {background:#1C2540;border:1px solid #2C3E6E;border-radius:8px;padding:8px 12px;color:#5D6D7E;font-weight:700;text-align:center}
 .alert-box {background:#3A0808;border:1px solid #C0392B;border-radius:10px;padding:12px;color:#ECF0F1}
 .auth-ok {background:#0D3B1E;border:1px solid #27AE60;border-radius:8px;padding:10px;color:#27AE60}
 .auth-fail {background:#3A0808;border:1px solid #C0392B;border-radius:8px;padding:10px;color:#C0392B}
-<<<<<<< HEAD
 .pred-box {background:#1A2040;border:1px solid #3A5A9E;border-radius:12px;padding:16px;color:#ECF0F1;margin-top:8px}
-=======
->>>>>>> c64fc4723f2fb7b8268bd26de2a9b4a947f1f340
 h1,h2,h3 {color:#EF9F27}
 </style>
 """, unsafe_allow_html=True)
@@ -295,11 +246,7 @@ h1,h2,h3 {color:#EF9F27}
 # ── SIDEBAR ──
 with st.sidebar:
     st.markdown("# ⚡ DISA Pro")
-<<<<<<< HEAD
     st.markdown("**Supervision Solaire v4.2**")
-=======
-    st.markdown("**Supervision Solaire v4.1**")
->>>>>>> c64fc4723f2fb7b8268bd26de2a9b4a947f1f340
     st.markdown("---")
 
     page = st.radio("Navigation", [
@@ -363,21 +310,12 @@ if page == "📊 Tableau de bord":
         # Mode card
         mode = last.get("mode","INCONNU")
         soc  = last.get("soc", 0)
-<<<<<<< HEAD
-=======
-        src  = last.get("source","—")
-        grid = "Présent ✓" if last.get("grid") else "Absent ✗"
->>>>>>> c64fc4723f2fb7b8268bd26de2a9b4a947f1f340
         st.markdown(f"""
         <div class="mode-{mode}">
           <div style="font-size:11px;opacity:0.6;letter-spacing:1px">MODE ÉNERGÉTIQUE ACTIF</div>
           <div style="display:flex;justify-content:space-between;align-items:center">
             <div>
               <div style="font-size:36px;font-weight:900;letter-spacing:3px">{mode}</div>
-<<<<<<< HEAD
-=======
-              <div style="font-size:13px;margin-top:4px;opacity:0.8">Source : {src} &nbsp;|&nbsp; Réseau 220V : {grid}</div>
->>>>>>> c64fc4723f2fb7b8268bd26de2a9b4a947f1f340
             </div>
             <div style="text-align:right">
               <div style="font-size:52px;font-weight:900">{soc:.1f}%</div>
@@ -390,53 +328,34 @@ if page == "📊 Tableau de bord":
         st.markdown("")
 
         # KPI
-<<<<<<< HEAD
         def fmtu(val, dec, unit):
             if val is None or val == -99 or val == -1: return "N/D"
             return f"{float(val):.{dec}f} {unit}"
 
         c1,c2,c3,c4,c5,c6,c7 = st.columns(7)
-        c1.metric("Tension",      fmtu(last.get("voltage"), 2, "V"))
-        c2.metric("Courant",      fmtu(last.get("current"), 2, "A"))
-        c3.metric("Puissance",    fmtu(last.get("power"),   1, "W"))
-        c4.metric("Température",  fmtu(last.get("temp"),    1, "°C"))
-        c5.metric("Humidité",     fmtu(last.get("humid"),   1, "%"))
-        c6.metric("Irradiance",   fmtu(last.get("lux"),     0, "lx"))
-        c7.metric("Anomalies",    str(last.get("anomaly_count", 0)))
+        c1.metric("Tension",     fmtu(last.get("voltage"), 2, "V"))
+        c2.metric("Courant",     fmtu(last.get("current"), 2, "A"))
+        c3.metric("Puissance",   fmtu(last.get("power"),   1, "W"))
+        c4.metric("Température", fmtu(last.get("temp"),    1, "°C"))
+        c5.metric("Humidité",    fmtu(last.get("humid"),   1, "%"))
+        c6.metric("Irradiance",  fmtu(last.get("lux"),     0, "lx"))
+        c7.metric("Anomalies",   str(last.get("anomaly_count", 0)))
 
         # Relais
         st.markdown("#### Relais")
         r1, r2 = st.columns(2)
-=======
-        c1,c2,c3,c4,c5,c6,c7 = st.columns(7)
-        def fmt(val, dec=1):
-            if val is None or val == -99 or val == -1: return "—"
-            return f"{float(val):.{dec}f}"
-        c1.metric("Tension", fmt(last.get("voltage"),2)+" V")
-        c2.metric("Courant", fmt(last.get("current"),2)+" A")
-        c3.metric("Puissance", fmt(last.get("power"),1)+" W")
-        c4.metric("Température", fmt(last.get("temp"),1)+" °C")
-        c5.metric("Humidité", fmt(last.get("humid"),1)+" %")
-        c6.metric("Irradiance", fmt(last.get("lux"),0)+" lx")
-        c7.metric("Anomalies", str(last.get("anomaly_count",0)))
-
-        # Relais
-        st.markdown("#### Relais")
-        r1,r2,r3 = st.columns(3)
->>>>>>> c64fc4723f2fb7b8268bd26de2a9b4a947f1f340
         def relay_html(label, desc, on):
             cls = "relay-on" if on else "relay-off"
             state = "ON ●" if on else "OFF ○"
             return f'<div class="{cls}"><strong>{label}</strong><br><small>{desc}</small><br>{state}</div>'
-<<<<<<< HEAD
         r1.markdown(relay_html("R1 — Charges critiques",  "Éclairage, équipements vitaux", last.get("r1")), unsafe_allow_html=True)
         r2.markdown(relay_html("R2 — Charges secondaires","Ventilateurs, confort",          last.get("r2")), unsafe_allow_html=True)
 
         # Status
         st.markdown("")
         s1, s2, s3 = st.columns(3)
-        s1.markdown("🟢 SD Card OK"    if last.get("sd_ok")   else "🔴 SD Card erreur")
-        s2.markdown("🟢 WiFi OK"       if last.get("wifi_ok") else "🔴 WiFi hors ligne")
+        s1.markdown("🟢 SD Card OK"  if last.get("sd_ok")   else "🔴 SD Card erreur")
+        s2.markdown("🟢 WiFi OK"     if last.get("wifi_ok") else "🔴 WiFi hors ligne")
         s3.markdown(f"🕐 Dernière : {last.get('ts','—')}")
 
         # ── Module Prédictif Adaptatif ──
@@ -464,19 +383,6 @@ if page == "📊 Tableau de bord":
                 f'{thr_parts}</div>',
                 unsafe_allow_html=True
             )
-=======
-        r1.markdown(relay_html("R1 — Charges critiques","Éclairage, équipements vitaux",last.get("r1")), unsafe_allow_html=True)
-        r2.markdown(relay_html("R2 — Charges secondaires","Ventilateurs, confort",last.get("r2")), unsafe_allow_html=True)
-        r3.markdown(relay_html("R3 — Bascule source","Grid / Solaire / Recharge",last.get("r3")), unsafe_allow_html=True)
-
-        # Status
-        st.markdown("")
-        s1,s2,s3,s4 = st.columns(4)
-        s1.markdown("🟢 SD Card OK" if last.get("sd_ok") else "🔴 SD Card erreur")
-        s2.markdown("🟢 WiFi OK" if last.get("wifi_ok") else "🔴 WiFi hors ligne")
-        s3.markdown("🟢 Watchdog OK" if last.get("wdt_ok") else "🔴 Watchdog erreur")
-        s4.markdown(f"🕐 Dernière : {last.get('ts','—')}")
->>>>>>> c64fc4723f2fb7b8268bd26de2a9b4a947f1f340
 
     # Graphiques
     ts   = list(st.session_state.history_ts)
@@ -582,7 +488,6 @@ elif page == "⚡ Commandes":
 
         with col1:
             st.markdown("#### 🔄 Modes énergétiques")
-<<<<<<< HEAD
             mc1, mc2, mc3 = st.columns(3)
             if mc1.button("✅ NORMAL",   use_container_width=True): send_cmd({"cmd":"SET_MODE","mode":0}); st.rerun()
             if mc2.button("⚠️ CRITIQUE", use_container_width=True): send_cmd({"cmd":"SET_MODE","mode":1}); st.rerun()
@@ -594,26 +499,10 @@ elif page == "⚡ Commandes":
             if st.button("🧠 Reset IA",                  use_container_width=True): send_cmd({"cmd":"RESET_AI"}); st.rerun()
             if st.button("📏 Reset baselines anomalies", use_container_width=True): send_cmd({"cmd":"RESET_BASELINE","type":0}); st.rerun()
             if st.button("🕐 Synchroniser l'heure",      use_container_width=True):
-=======
-            mc1,mc2 = st.columns(2)
-            if mc1.button("✅ NORMAL", use_container_width=True): send_cmd({"cmd":"SET_MODE","mode":0}); st.rerun()
-            if mc2.button("🌙 ECO", use_container_width=True): send_cmd({"cmd":"SET_MODE","mode":1}); st.rerun()
-            mc3,mc4 = st.columns(2)
-            if mc3.button("⚠️ CRITIQUE", use_container_width=True): send_cmd({"cmd":"SET_MODE","mode":2}); st.rerun()
-            if mc4.button("🔴 COUPE", use_container_width=True): send_cmd({"cmd":"SET_MODE","mode":3}); st.rerun()
-            if st.button("↩ Revenir en AUTO", use_container_width=True): send_cmd({"cmd":"AUTO"}); st.rerun()
-
-            st.markdown("#### 🔧 Actions système")
-            if st.button("💾 Flush SD", use_container_width=True): send_cmd({"cmd":"FLUSH_SD"}); st.rerun()
-            if st.button("🧠 Reset IA", use_container_width=True): send_cmd({"cmd":"RESET_AI"}); st.rerun()
-            if st.button("📏 Reset baselines anomalies", use_container_width=True): send_cmd({"cmd":"RESET_BASELINE","type":0}); st.rerun()
-            if st.button("🕐 Synchroniser l'heure", use_container_width=True):
->>>>>>> c64fc4723f2fb7b8268bd26de2a9b4a947f1f340
                 send_cmd({"cmd":"SET_TIME","epoch":int(time.time())}); st.rerun()
 
         with col2:
             st.markdown("#### 📊 Modifier les seuils SOC")
-<<<<<<< HEAD
             sn     = st.number_input("NORMAL ≥ (%)",   min_value=0, max_value=100, value=70)
             sc_val = st.number_input("CRITIQUE ≥ (%)", min_value=0, max_value=100, value=40)
             if st.button("Appliquer les seuils", use_container_width=True):
@@ -622,17 +511,6 @@ elif page == "⚡ Commandes":
                     st.rerun()
                 else:
                     st.error("NORMAL > CRITIQUE > 0")
-=======
-            sn = st.number_input("NORMAL ≥ (%)", min_value=0, max_value=100, value=70)
-            se = st.number_input("ECO ≥ (%)", min_value=0, max_value=100, value=50)
-            sc_val = st.number_input("CRITIQUE ≥ (%)", min_value=0, max_value=100, value=40)
-            if st.button("Appliquer les seuils", use_container_width=True):
-                if sn > se > sc_val > 0:
-                    send_cmd({"cmd":"SET_THRESHOLDS","normal":sn,"eco":se,"critique":sc_val})
-                    st.rerun()
-                else:
-                    st.error("NORMAL > ECO > CRITIQUE > 0")
->>>>>>> c64fc4723f2fb7b8268bd26de2a9b4a947f1f340
 
         # Résultat
         if st.session_state.cmd_result:
@@ -707,11 +585,7 @@ elif page == "🖥 Système":
         st.table({
             "Paramètre": ["Version DISA","Uptime dashboard","Mesures reçues","Dernière donnée"],
             "Valeur": [
-<<<<<<< HEAD
                 "v4.2",
-=======
-                "v4.1.0",
->>>>>>> c64fc4723f2fb7b8268bd26de2a9b4a947f1f340
                 str(datetime.datetime.now()-st.session_state.session_start).split(".")[0],
                 str(st.session_state.total_measures),
                 last.get("ts","—") if last else "—"
@@ -721,7 +595,6 @@ elif page == "🖥 Système":
     with c2:
         st.markdown("#### 🔬 Capteurs")
         if last:
-<<<<<<< HEAD
             dht_ok = last.get("temp") is not None
             bh_ok  = last.get("lux") is not None
             rows = {
@@ -732,18 +605,6 @@ elif page == "🖥 Système":
                     "🟢 OK" if bh_ok  else "🟡 Non détecté",
                     "🟢 OK" if last.get("sd_ok")   else "🔴 Erreur",
                     "🟢 OK" if last.get("wifi_ok") else "🔴 Hors ligne",
-=======
-            dht_ok = last.get("temp") is not None and last.get("temp") != -99
-            bh_ok  = last.get("lux") is not None and last.get("lux") != -1
-            rows = {
-                "Capteur":["INA219 (V+I)","DHT22 (T+H)","BH1750 (lux)","SD Card","WiFi ESP32","Watchdog"],
-                "Statut":[
-                    "🟢 OK","🟢 OK" if dht_ok else "🔴 Erreur",
-                    "🟢 OK" if bh_ok else "🟡 Non détecté",
-                    "🟢 OK" if last.get("sd_ok") else "🔴 Erreur",
-                    "🟢 OK" if last.get("wifi_ok") else "🔴 Hors ligne",
-                    "🟢 OK" if last.get("wdt_ok") else "🔴 Erreur"
->>>>>>> c64fc4723f2fb7b8268bd26de2a9b4a947f1f340
                 ]
             }
             import pandas as pd
@@ -753,7 +614,6 @@ elif page == "🖥 Système":
 
     c3,c4 = st.columns(2)
     with c3:
-<<<<<<< HEAD
         st.markdown("#### 🧠 Module Prédictif Adaptatif")
         if last and last.get("predictif"):
             pred = last["predictif"]
@@ -772,22 +632,6 @@ elif page == "🖥 Système":
                 st.caption(f"Seuil CRITIQUE adapté : {pred['thr_critique']} %")
         else:
             st.info("En attente de données prédictives...")
-=======
-        st.markdown("#### 🧠 Module IA")
-        if last and last.get("ai"):
-            ai = last["ai"]
-            st.table({
-                "Paramètre":["Statut","Inférences","Tension prédite","Mode prédit"],
-                "Valeur":[
-                    "Prêt" if ai.get("ready") else "En apprentissage",
-                    str(ai.get("inferences",0)),
-                    f"{ai.get('pred_v','—')} V" if ai.get("pred_v",0)>0 else "—",
-                    ai.get("pred_mode","—")
-                ]
-            })
-        else:
-            st.info("En attente de données IA...")
->>>>>>> c64fc4723f2fb7b8268bd26de2a9b4a947f1f340
 
     with c4:
         st.markdown("#### 🔗 Connexion")
@@ -836,12 +680,7 @@ elif page == "⚙ Paramètres":
     st.markdown("---")
     st.markdown("#### ℹ️ À propos")
     st.markdown("""
-<<<<<<< HEAD
     **DISA Pro Dashboard v4.2**
     KOUKPAKI Cyrius — ESMER Bénin 2025-2026
-=======
-    **DISA Pro Dashboard v3.0**  
-    KOUKPAKI Cyrius — ESMER Bénin 2025-2026  
->>>>>>> c64fc4723f2fb7b8268bd26de2a9b4a947f1f340
     Dispositif Intelligent de Supervision Autonome
     """)
