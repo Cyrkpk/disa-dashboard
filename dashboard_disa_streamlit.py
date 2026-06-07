@@ -80,7 +80,7 @@ def process_data(raw):
         power   = bat.get("power_w", 0)
         temp    = env.get("temp_c", 0)    if env.get("dht_ok")    else None
         humid   = env.get("humid_pct", 0) if env.get("dht_ok")    else None
-        lux     = env.get("lux", -1)      if env.get("bh1750_ok") else None
+        lux     = env.get("lux", -1)      if (env.get("bh1750_ok") or env.get("ldr_ok")) else None
         mode    = d.get("mode_name", "INCONNU")
         a_count = d.get("anomaly_count", 0)
 
@@ -150,14 +150,21 @@ def usb_thread():
 # ═══════════════════════════════════════════
 # MQTT
 # ═══════════════════════════════════════════
+_mqtt_topic = MQTT_TOPIC
+_conn_mode  = "disconnected"
+
 def start_mqtt():
+    global _mqtt_topic, _conn_mode
     def on_connect(client, ud, flags, rc):
+        global _conn_mode
         if rc == 0:
-            st.session_state.conn_mode = "mqtt"
-            client.subscribe(st.session_state.mqtt_topic)
+            _conn_mode = "mqtt"
+            client.subscribe(_mqtt_topic)
     def on_message(client, ud, msg):
-        try: process_data(json.loads(msg.payload.decode()))
-        except: pass
+        try:
+            process_data(json.loads(msg.payload.decode()))
+        except Exception as e:
+            print(f"[MQTT MSG] {e}")
     client = mqtt.Client()
     client.username_pw_set(MQTT_USERNAME, MQTT_PASSWORD)
     client.tls_set()
@@ -215,7 +222,16 @@ init_state()
 # Démarrer les threads une seule fois
 if not st.session_state.mqtt_started:
     st.session_state.mqtt_started = True
-    threading.Thread(target=start_mqtt, daemon=True).start()
+    t = threading.Thread(target=start_mqtt, daemon=True)
+    t.start()
+    st.session_state["mqtt_thread"] = t
+
+if "mqtt_thread" in st.session_state:
+    if not st.session_state["mqtt_thread"].is_alive():
+        st.session_state.mqtt_started = False
+        st.session_state["mqtt_thread"] = threading.Thread(
+            target=start_mqtt, daemon=True)
+        st.session_state["mqtt_thread"].start()
 
 if not st.session_state.usb_started:
     st.session_state.usb_started = True
